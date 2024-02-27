@@ -1,0 +1,25 @@
+{
+  "name": "hindii-handwritten-ai",
+  "version": "1.0.0",
+  "description": "Using CNN to learn HIndi letters(for new learners)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surajshivkumar/Hindii-Handwritten-Ai.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surajshivkumar/Hindii-Handwritten-Ai/issues"
+  },
+  "homepage": "https://github.com/surajshivkumar/Hindii-Handwritten-Ai#readme",
+  "dependencies": {
+    "autoprefixer": "^10.4.17",
+    "chart.js": "^4.4.1",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1"
+  }
+}

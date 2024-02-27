@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      Handwritten Digit Recognition using Convolutional Neural Networks
+    </title>
+
+    <!-- <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"> -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Waiting+for+the+Sunrise"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+    />
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <style>
+      .canvas {
+        border: 8px solid;
+        border-radius: 5px;
+        /* cursor: not-allowed; */
+        cursor: crosshair;
+        /* margin: 0 auto; */
+      }
+
+      button {
+        min-width: 90px !important;
+      }
+
+      .text-section {
+        font-size: 4rem;
+      }
+
+      .main-text {
+        font-family: sans-serif;
+        font-size: 1.5rem !important;
+      }
+
+      h2 {
+        font-size: 4rem !important;
+      }
+
+      .font-sans {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="flex h-screen flex-col justify-center items-center">
+    <div class="container flex flex-col items-center mt-5">
+      <h1 class="main-text">Draw the required letter within the box</h1>
+      <div class="flex flex-col gap-4">
+        <!-- <i
+          class="fa fa-volume fa-4x cursor-pointer"
+          aria-hidden="true"
+          align="center"
+          onclick="playMusic()"
+        ></i> -->
+
+        <div class="flex justify-center items-center min-h-[60px]">
+          <span
+            class="material-symbols-rounded text-6xl cursor-pointer hover:text-green-300"
+            id="volumeMute"
+            onclick="playMusic()"
+          >
+            volume_mute
+          </span>
+          <span class="material-symbols-rounded text-6xl hidden" id="volumeUp">
+            volume_up
+          </span>
+          <p id="startDrawing" class="hidden">Start Drawing!</p>
+        </div>
+        <div class="flex justify-center gap-2">
+          <p class="font-semibold">Round: <span id="counter"></span>/4</p>
+          <p class="font-semibold">Score: <span id="score">0</span></p>
+        </div>
+
+        <div class="canvas-wrapper w-fit h-fit relative" id="canvasWrapper">
+          <canvas id="canvas" width="280" height="280" class="canvas mt-1">
+          </canvas>
+          <img
+            alt="Description of GIF"
+            id="myGif"
+            class="hidden absolute top-[5%] left-[5%] w-[90%] h-[90%]"
+          />
+        </div>
+        <!-- <p id="score" class="font-sans p-0 m-0"></p> -->
+      </div>
+
+      <div class="flex justify-center gap-2 lg:pt-8 pt-4">
+        <div id="debug">
+          <button
+            class="whitespace-nowrap border-none text-center py-2 lg:px-5 px-3 transition lg:text-lg text-base font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-black hidden"
+            id="clearButton"
+          >
+            Clear
+          </button>
+        </div>
+        <button
+          class="whitespace-nowrap border-none text-center py-2 lg:px-5 px-3 transition lg:text-lg text-base font-semibold rounded-lg bg-blue-400 hover:bg-blue-600 text-white"
+          id="startButton"
+        >
+          Learn
+        </button>
+
+        <button
+          class="whitespace-nowrap border-none text-center py-2 lg:px-5 px-3 transition lg:text-lg text-base font-semibold rounded-lg bg-blue-400 hover:bg-blue-600 text-white hidden"
+          id="readyButton"
+        >
+          Ready
+        </button>
+        <button
+          class="whitespace-nowrap border-none text-center py-2 lg:px-5 px-3 transition lg:text-lg text-base font-semibold rounded-lg bg-blue-400 hover:bg-blue-600 text-white hidden"
+          id="submitButton"
+        >
+          Submit
+        </button>
+        <button
+          class="whitespace-nowrap border-none text-center py-2 lg:px-5 px-3 transition lg:text-lg text-base font-semibold rounded-lg bg-blue-400 hover:bg-blue-600 text-white hidden"
+          id="nextButton"
+        >
+          Next
+        </button>
+      </div>
+      <div>
+        <h2 id="result"><span></span></h2>
+      </div>
+    </div>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="../static/index.js"></script>
+    <script type="text/javascript">
+      letterMap = [
+        {
+          img: "../static/A2.gif",
+          voice: "../static/A.mp3",
+          letter: "A",
+        },
+        {
+          img: "../static/S.gif",
+          voice: "../static/S.mp3",
+          letter: "S",
+        },
+        {
+          img: "../static/K.gif",
+          voice: "../static/K.mp3",
+          letter: "K",
+        },
+        {
+          img: "../static/B.gif",
+          voice: "../static/B.mp3",
+          letter: "B",
+        },
+      ];
+      selectedLetter = letterMap[0];
+
+      var canvas = document.querySelector("#canvas");
+      var context = canvas.getContext("2d");
+      canvas.width = 280;
+      canvas.height = 280;
+
+      var Mouse = { x: 0, y: 0 };
+      var lastMouse = { x: 0, y: 0 };
+      context.fillStyle = "white";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.color = "black";
+      context.lineWidth = 10;
+      context.lineJoin = context.lineCap = "round";
+
+      debug();
+
+      canvas.addEventListener(
+        "mousemove",
+        function (e) {
+          lastMouse.x = Mouse.x;
+          lastMouse.y = Mouse.y;
+
+          Mouse.x = e.pageX - this.offsetLeft;
+          Mouse.y = e.pageY - this.offsetTop;
+        },
+        false
+      );
+
+      canvas.addEventListener(
+        "mousedown",
+        function (e) {
+          canvas.addEventListener("mousemove", onPaint, false);
+        },
+        false
+      );
+
+      canvas.addEventListener(
+        "mouseup",
+        function () {
+          canvas.removeEventListener("mousemove", onPaint, false);
+        },
+        false
+      );
+
+      var onPaint = function () {
+        context.lineWidth = context.lineWidth;
+        context.lineJoin = "round";
+        context.lineCap = "round";
+        context.strokeStyle = context.color;
+
+        context.beginPath();
+        context.moveTo(lastMouse.x, lastMouse.y);
+        context.lineTo(Mouse.x, Mouse.y);
+        context.closePath();
+        context.stroke();
+      };
+
+      function debug() {
+        /* CLEAR BUTTON */
+        var clearButton = $("#clearButton");
+
+        clearButton.on("click", function () {
+          context.clearRect(0, 0, 280, 280);
+          context.fillStyle = "white";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+        });
+
+        /* COLOR SELECTOR */
+
+        $("#colors").change(function () {
+          var color = $("#colors").val();
+          context.color = color;
+        });
+
+        /* LINE WIDTH */
+
+        $("#lineWidth").change(function () {
+          context.lineWidth = $(this).val();
+        });
+      }
+
+      let gif = document.getElementById("myGif");
+      console.log(selectedLetter);
+      gif.src = selectedLetter.img;
+      let counter = 0;
+      document.getElementById("counter").textContent = 1;
+      let nextButton = document.getElementById("nextButton");
+      nextButton.addEventListener("click", () => {
+        document.getElementById("canvas").style.border = "6px solid";
+        document.getElementById("canvas").style.boxShadow = "none";
+        document.getElementById("canvasWrapper").classList.add("relative");
+        counter += 1;
+        document.getElementById("counter").textContent = counter + 1;
+        selectedLetter = letterMap[counter];
+        console.log("selectedLetter !!", selectedLetter);
+        gif.src = selectedLetter.img;
+
+        clearCanvas();
+        document.getElementById("nextButton").classList.add("hidden");
+
+        console.log("counter !!!", counter);
+        if (counter <= 3) {
+          readyNextLetter();
+        }
+      });
+
+      document.getElementById("readyButton").addEventListener("click", () => {
+        console.log("READY BUTTON");
+        gif.classList.add("hidden");
+        document.getElementById("canvasWrapper").classList.remove("relative");
+        document.getElementById("readyButton").classList.add("hidden");
+        document.getElementById("submitButton").classList.remove("hidden");
+        document.getElementById("clearButton").classList.remove("hidden");
+
+        document.getElementById("volumeMute").classList.add("hidden");
+        document.getElementById("volumeUp").classList.add("hidden");
+        document.getElementById("startDrawing").classList.remove("hidden");
+      });
+
+      function readyNextLetter() {
+        gif.classList.remove("hidden");
+        document.getElementById("startButton").classList.add("hidden");
+        document.getElementById("readyButton").classList.remove("hidden");
+        playMusic();
+      }
+
+      document.getElementById("startButton").addEventListener("click", () => {
+        console.log("startButton");
+        readyNextLetter();
+      });
+
+      let json_data = {{ letters|tojson }};
+
+      let submitButton = document.getElementById("submitButton");
+      let clearButton1 = document.getElementById("clearButton");
+
+      let scoreID = document.getElementById("score");
+      let score = 0;
+
+      document.getElementById("submitButton").addEventListener("click", () => {
+        // toggleButtons();
+        let canvasObj = document.getElementById("canvas");
+        let img = canvasObj.toDataURL("image/png");
+        $.ajax({
+          type: "POST",
+          url: "/predict",
+          data: img,
+          success: function (data) {
+            // $("#result").text(" Predicted Output: " + data);
+            console.log( data);
+            if (selectedLetter.letter === data) {
+              document.getElementById("canvas").style.boxShadow =
+                "0px 2px 20px 10px rgba(0, 255, 0, 0.7)";
+              document.getElementById("canvas").style.borderColor =
+                "rgba(0, 255, 0, 0.7)";
+
+              score += 1;
+              scoreID.textContent = score;
+            } else {
+              document.getElementById("canvas").style.boxShadow =
+                "0px 2px 20px 10px rgba(255, 0, 0, 0.7)";
+              document.getElementById("canvas").style.borderColor =
+                "rgba(255, 0, 0, 0.7)";
+            }
+
+            document.getElementById("submitButton").classList.add("hidden");
+            document.getElementById("clearButton").classList.add("hidden");
+            // button.disabled = false;
+            nextButton.classList.remove("hidden");
+            if (counter >= 3) {
+              document.getElementById("nextButton").classList.add("hidden");
+            }
+          },
+        });
+      });
+
+      function clearCanvas() {
+        let canvas = document.querySelector("#canvas");
+        let context = canvas.getContext("2d");
+        context.clearRect(0, 0, 280, 280);
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        document.getElementById("canvas").style.boxShadow = "none";
+        document.getElementById("canvas").style.borderColor = "black";
+      }
+
+      let music;
+      function playMusic() {
+        document.getElementById("volumeMute").classList.add("hidden");
+        document.getElementById("volumeUp").classList.remove("hidden");
+        music = new Audio(selectedLetter.voice);
+        music.play();
+
+        music.onended = function () {
+          console.log(
+            "Music stopped playing",
+            document.getElementById("readyButton").classList.contains("hidden")
+          );
+          if (
+            !document.getElementById("readyButton").classList.contains("hidden")
+          ) {
+            document.getElementById("volumeMute").classList.remove("hidden");
+          }
+          document.getElementById("volumeUp").classList.add("hidden");
+        };
+      }
+
+      // function onSubmit() {
+      //   score += 1;
+      //   scoreID.textContent = score;
+      //   // clearCanvas();
+      // }
+    </script>
+  </body>
+</html>
