@@ -12,6 +12,7 @@ believed in our vision of making learning to write fun and accessible to all.
 ## Team Graphien
 - Suraj
 - Joe
+- Nagasai Saikam
 
 ## About
 Welcome to the Graphien repository, our innovative project for the BayHacks 2024 event! Graphien is akin to Duolingo for learning how 
